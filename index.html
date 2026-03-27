@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Easter Break Revisions - Emergence Secondary</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; padding: 20px; color: #333; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 35px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); border-top: 8px solid #1e3a8a; }
+        
+        /* School Branding */
+        .header-branding { text-align: center; margin-bottom: 20px; }
+        .school-logo { width: 120px; height: auto; border-radius: 50%; margin-bottom: 10px; }
+        .school-title { font-size: 26px; color: #1e3a8a; margin: 0; text-transform: uppercase; letter-spacing: 1px; font-weight: 800; }
+        .location { margin: 5px 0; color: #64748b; font-weight: 600; }
+        
+        h1.main-title { color: #2c3e50; text-align: center; font-size: 28px; margin-top: 20px; margin-bottom: 5px; }
+        h3.subtitle { color: #7f8c8d; text-align: center; margin-top: 0; font-weight: 400; }
+        .tutor-name { text-align: center; font-weight: bold; color: #34495e; margin-bottom: 25px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        
+        /* Module Buttons */
+        .module-btn { background: #fff; color: #2c3e50; border: 2px solid #e2e8f0; padding: 18px; margin: 12px 0; width: 100%; border-radius: 12px; cursor: pointer; font-size: 17px; transition: 0.3s; text-align: left; display: flex; justify-content: space-between; align-items: center; }
+        .module-btn:hover:not(:disabled) { border-color: #3498db; background: #f8fafc; transform: translateY(-2px); }
+        .module-btn:disabled { background: #f1f5f9; cursor: not-allowed; color: #94a3b8; border-color: #e2e8f0; }
+        .module-btn.passed { background: #ecfdf5; border-color: #10b981; color: #065f46; }
+        
+        /* Quiz Elements */
+        .options button { display: block; width: 100%; padding: 14px; margin: 12px 0; border: 1px solid #cbd5e1; border-radius: 10px; background: #fff; cursor: pointer; text-align: left; font-size: 16px; transition: 0.2s; }
+        .options button:hover { background: #eff6ff; border-color: #3498db; }
+        .hint-box { display: none; background: #fffbeb; border: 1px solid #fde68a; color: #92400e; padding: 15px; border-radius: 10px; margin: 15px 0; font-style: italic; font-size: 15px; }
+        
+        /* Results */
+        .grade-badge { font-size: 55px; font-weight: 800; margin: 15px 0; }
+        .review-box { background: #fff5f5; border: 1px solid #feb2b2; padding: 20px; border-radius: 12px; margin-top: 25px; text-align: left; }
+        .review-item { margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px dashed #feb2b2; }
+
+        .nav-btns { display: flex; justify-content: space-between; margin-top: 30px; gap: 10px; }
+        .btn { padding: 12px 24px; border-radius: 8px; cursor: pointer; border: none; font-weight: 600; font-size: 15px; transition: 0.2s; }
+        .btn-hint { background: #f59e0b; color: white; flex-grow: 1; }
+        .btn-home { background: #64748b; color: white; }
+        .btn-reset { background: #ef4444; color: white; margin-top: 20px; width: 100%; }
+        
+        .reading-passage { background: #f8fafc; padding: 25px; border-radius: 12px; margin-bottom: 25px; border: 1px solid #e2e8f0; line-height: 1.7; font-size: 16px; color: #334155; }
+        .badge-passed { background: #10b981; color: white; padding: 4px 10px; border-radius: 20px; font-size: 12px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="menu">
+        <div class="header-branding">
+            <img src="logo.jpg" alt="School Logo" class="school-logo">
+            <h2 class="school-title">Emergence Secondary School</h2>
+            <p class="location">Logbessou Douala</p>
+        </div>
+        <hr style="border:0; border-top:1px solid #eee;">
+        <h1 class="main-title">Easter Break Revisions</h1>
+        <h3 class="subtitle">English for French-speaking Learners (5ème)</h3>
+        <p class="tutor-name">Tutor: Mme EWALA Rosny Ludvine</p>
+        <div id="module-list"></div>
+        <button class="btn btn-reset" onclick="resetProgress()">Clear All Progress & Restart</button>
+    </div>
+
+    <div id="quiz-area" style="display:none">
+        <h2 id="module-title" style="text-align:left; color:#1e3a8a;"></h2>
+        <div id="passage-container" class="reading-passage" style="display:none">
+            <p id="passage-text"></p>
+        </div>
+        <div id="question-container"></div>
+        <div id="hint-display" class="hint-box"></div>
+        <div class="nav-btns">
+            <button class="btn btn-home" onclick="showMenu()">Main Menu</button>
+            <button class="btn btn-hint" onclick="toggleHintDisplay()">Need a Hint? 💡</button>
+        </div>
+    </div>
+
+    <div id="result-area" style="display:none; text-align: center;">
+        <h2 id="result-status"></h2>
+        <div id="grade-container" class="grade-badge"></div>
+        <p id="score-text" style="font-size: 22px; margin-bottom: 10px;"></p>
+        <div id="review-area" class="review-box" style="display:none">
+            <h4 style="color: #c53030; margin-top:0;">Study These Rules to Progress:</h4>
+            <div id="failed-questions"></div>
+        </div>
+        <button id="next-action-btn" class="btn" style="margin-top:25px; width: 100%; padding: 18px; color: white; font-size: 18px;"></button>
+    </div>
+</div>
+
+<script>
+    const allModules = [
+        { 
+            title: "Module 1: Home, Habits & Relationships", 
+            questions: [
+                { q: "Last week, my sister ______ the floor.", options: ["sweep", "swept", "sweeping"], answer: "swept", hint: "Recycle simple past tense (swept)." },
+                { q: "To ______ means to socialise and talk to new people.", options: ["mingle", "fight", "ignore"], answer: "mingle", hint: "Vocabulary: Interpersonal relationships." },
+                { q: "The cat is hiding ______ the table.", options: ["between", "under", "among"], answer: "under", hint: "Grammar: Prepositions of place." },
+                { q: "A ______ is a large piece of furniture for hanging clothes.", options: ["wardrobe", "sink", "fridge"], answer: "wardrobe", hint: "Vocabulary: Home furnishings." },
+                { q: "You ______ wash your hands before every meal.", options: ["may", "can", "must"], answer: "must", hint: "Grammar: Modals for obligation (must)." },
+                { q: "Did you ______ your chores yesterday?", options: ["finish", "finished", "finishing"], answer: "finish", hint: "Grammar: Use base form after 'did'." },
+                { q: "We cook our meals in the ______.", options: ["kitchen", "parlor", "garage"], answer: "kitchen", hint: "Vocabulary: Rooms in a house." },
+                { q: "I ______ clean my room to keep it neat.", options: ["never", "always", "rarely"], answer: "always", hint: "Grammar: Adverbs of frequency." },
+                { q: "We ______ go to the farm last Sunday.", options: ["did not", "do not", "does not"], answer: "did not", hint: "Grammar: Simple past negative." },
+                { q: "It was ______ meet you at the party.", options: ["nice to", "bad to", "sad to"], answer: "nice to", hint: "Vocabulary: Social expressions." },
+                { q: "A broom is a tool used to ______ the yard.", options: ["wash", "sweep", "paint"], answer: "sweep", hint: "Vocabulary: Household chores." },
+                { q: "The guest is sitting ______ the sofa.", options: ["on", "at", "in"], answer: "on", hint: "Grammar: Prepositions of place." },
+                { q: "I always ______ my bed before school.", options: ["do", "make", "fix"], answer: "make", hint: "Vocabulary: Routine habits." },
+                { q: "Please ______ the trash to the bin outside.", options: ["take out", "look up", "put in"], answer: "take out", hint: "Grammar: Basic phrasal verbs." },
+                { q: "My father is looking ______ his lost keys.", options: ["after", "for", "into"], answer: "for", hint: "Grammar: Phrasal verbs (search)." },
+                { q: "A ______ is found in the bathroom for washing hands.", options: ["sink", "bed", "stove"], answer: "sink", hint: "Vocabulary: Home furnishing." },
+                { q: "The ______ is a room where we sleep.", options: ["parlor", "kitchen", "bedroom"], answer: "bedroom", hint: "Vocabulary: Identifying rooms." },
+                { q: "I ______ my mother with the dishes yesterday.", options: ["helped", "help", "helping"], answer: "helped", hint: "Grammar: Simple past affirmative." },
+                { q: "We use a ______ to eat soup.", options: ["spoon", "fork", "knife"], answer: "spoon", hint: "Vocabulary: Kitchen tools." },
+                { q: "She ______ her hair every morning.", options: ["combs", "comb", "combing"], answer: "combs", hint: "Grammar: Present simple habit." }
+            ] 
+        },
+        { 
+            title: "Module 2: Jobs & Professions", 
+            questions: [
+                { q: "He is a ______ teacher.", options: ["Cameroonian kind old", "kind old Cameroonian", "old kind Cameroonian"], answer: "kind old Cameroonian", hint: "Grammar: Adjective order (Opinion, Age, Origin)." },
+                { q: "A person who flies an airplane is a ______.", options: ["pilot", "driver", "sailor"], answer: "pilot", hint: "Vocabulary: Job titles." },
+                { q: "If I study hard, I ______ pass my exams.", options: ["am", "will", "would"], answer: "will", hint: "Grammar: First conditional (if + present + will)." },
+                { q: "A ______ mends broken pipes and sinks.", options: ["electrician", "mason", "plumber"], answer: "plumber", hint: "Vocabulary: Common job tasks." },
+                { q: "I want to be a nurse ______ I like helping people.", options: ["because", "but", "so"], answer: "because", hint: "Grammar: Conjunctions for reason." },
+                { q: "Listen! The teacher ______ to the class now.", options: ["speaks", "is speaking", "spoke"], answer: "is speaking", hint: "Grammar: Present continuous tense." },
+                { q: "An ______ draws the plans for new houses.", options: ["architect", "artist", "author"], answer: "architect", hint: "Vocabulary: Professions." },
+                { q: "If it rains today, the farmer ______ plant seeds.", options: ["will", "does", "is"], answer: "will", hint: "Grammar: Conditional results." },
+                { q: "Working for free to help the community is ______.", options: ["volunteering", "trading", "hiring"], answer: "volunteering", hint: "Vocabulary: Types of work." },
+                { q: "I bought a ______ bag.", options: ["red small beautiful", "small red beautiful", "beautiful small red"], answer: "beautiful small red", hint: "Grammar: Adjective order." },
+                { q: "A ______ treats sick animals.", options: ["doctor", "vet", "nurse"], answer: "vet", hint: "Vocabulary: Job roles." },
+                { q: "The ______ bakes bread and cakes.", options: ["butcher", "baker", "chef"], answer: "baker", hint: "Vocabulary: Jobs." },
+                { q: "We will go to the market if it ______.", options: ["don't rain", "doesn't rain", "didn't rain"], answer: "doesn't rain", hint: "Grammar: If + present simple (negative)." },
+                { q: "She has ______ eyes.", options: ["beautiful big blue", "blue big beautiful", "big beautiful blue"], answer: "beautiful big blue", hint: "Grammar: Adjective order." },
+                { q: "A ______ defends people in court.", options: ["lawyer", "soldier", "police"], answer: "lawyer", hint: "Vocabulary: Professions." },
+                { q: "If you ______ fast, you will catch the bus.", options: ["run", "runs", "ran"], answer: "run", hint: "Grammar: First conditional." },
+                { q: "They ______ be great leaders in the future.", options: ["are", "will", "were"], answer: "will", hint: "Grammar: Expressing future." },
+                { q: "A ______ repairs electrical problems.", options: ["plumber", "electrician", "carpenter"], answer: "electrician", hint: "Vocabulary: Trades." },
+                { q: "I enjoy ______ about different careers.", options: ["read", "reading", "to read"], answer: "reading", hint: "Grammar: Gerund after 'enjoy'." },
+                { q: "The ______ prepares meat in a shop.", options: ["butcher", "baker", "tailor"], answer: "butcher", hint: "Vocabulary: Jobs." }
+            ] 
+        },
+        { 
+            title: "Module 3: Environment & Health", 
+            questions: [
+                { q: "It is ______ hot to play football today.", options: ["very", "too", "so"], answer: "too", hint: "Grammar: Intensifier for excess (too)." },
+                { q: "Always put your rubbish in a ______.", options: ["dustbin", "fridge", "cupboard"], answer: "dustbin", hint: "Vocabulary: Waste disposal." },
+                { q: "He is sick, ______ he is going to the hospital.", options: ["because", "but", "so"], answer: "so", hint: "Grammar: Connector for result (so)." },
+                { q: "An ______ is a machine used to burn trash.", options: ["incinerator", "elevator", "oven"], answer: "incinerator", hint: "Vocabulary: Environment terms." },
+                { q: "______ did you throw the plastic bottles?", options: ["What", "Where", "Who"], answer: "Where", hint: "Grammar: Interrogative pronouns (Place)." },
+                { q: "Giving a new life to used items is called ______.", options: ["burning", "recycling", "dumping"], answer: "recycling", hint: "Vocabulary: Recycling." },
+                { q: "It was raining; ______, we stayed inside.", options: ["consequently", "because", "but"], answer: "consequently", hint: "Grammar: Connectors for effect." },
+                { q: "Smoke from cars causes air ______.", options: ["health", "pollution", "nature"], answer: "pollution", hint: "Vocabulary: Environment awareness." },
+                { q: "The river is ______ clean for swimming.", options: ["too", "quite", "any"], answer: "quite", hint: "Grammar: Intensifiers." },
+                { q: "A ______ ground is a place for garbage.", options: ["playing", "dumping", "sewing"], answer: "dumping", hint: "Vocabulary: Waste management." },
+                { q: "We must protect our ______ for the future.", options: ["environment", "phones", "games"], answer: "environment", hint: "Vocabulary: Awareness." },
+                { q: "She has a cough ______ she was in the rain.", options: ["so", "because", "but"], answer: "because", hint: "Grammar: Connector for cause." },
+                { q: "You should ______ plastic bottles instead of burning them.", options: ["reuse", "hide", "eat"], answer: "reuse", hint: "Vocabulary: Recycling." },
+                { q: "______ is the most dangerous type of waste?", options: ["How", "What", "When"], answer: "What", hint: "Grammar: Interrogative pronouns." },
+                { q: "The forest is ______ beautiful.", options: ["very", "too", "any"], answer: "very", hint: "Grammar: Intensifiers." },
+                { q: "The climate is changing; ______, we must plant trees.", options: ["because", "therefore", "but"], answer: "therefore", hint: "Grammar: Connectors for results." },
+                { q: "Dirty water causes ______ diseases.", options: ["waterborne", "airborne", "fresh"], answer: "waterborne", hint: "Vocabulary: Health awareness." },
+                { q: "I am going to the clinic ______ of my headache.", options: ["so", "consequently", "because"], answer: "because", hint: "Grammar: Connector for cause." },
+                { q: "A ______ is where trash is buried.", options: ["landfill", "market", "school"], answer: "landfill", hint: "Vocabulary: Garbage disposal." },
+                { q: "Is ______ trash on the floor?", options: ["their", "there", "they're"], answer: "there", hint: "Grammar: Homophones." }
+            ] 
+        },
+        { 
+            title: "Module 4: Culture & Citizenship", 
+            questions: [
+                { q: "______ listen to the advice of your parents.", options: ["Never", "Always", "Rarely"], answer: "Always", hint: "Grammar: Imperative forms." },
+                { q: "Traditional music is part of our ______.", options: ["maths", "culture", "tech"], answer: "culture", hint: "Vocabulary: Local customs." },
+                { q: "Do you have ______ traditional clothes?", options: ["some", "any", "no"], answer: "any", hint: "Grammar: Quantifiers in questions." },
+                { q: "The ______ is a famous dress from Cameroon.", options: ["toghu", "suit", "jeans"], answer: "toghu", hint: "Vocabulary: Traditional attire." },
+                { q: "We should ______ respect the national flag.", options: ["never", "sometimes", "always"], answer: "always", hint: "Grammar: Time adverbials." },
+                { q: "The Ngondo is a great ______ in Douala.", options: ["festival", "fight", "lesson"], answer: "festival", hint: "Vocabulary: Cultural practices." },
+                { q: "He is a ______ king.", options: ["famous African", "African famous", "famously Africa"], answer: "famous African", hint: "Grammar: Adjective order (Opinion + Origin)." },
+                { q: "The leader of a village is called a ______.", options: ["Chief", "President", "Manager"], answer: "Chief", hint: "Vocabulary: Titles." },
+                { q: "I have ______ palm wine for the guests.", options: ["any", "no", "some"], answer: "some", hint: "Grammar: Quantifiers (positive)." },
+                { q: "A good ______ follows the rules of the country.", options: ["tourist", "citizen", "stranger"], answer: "citizen", hint: "Vocabulary: Citizenship." },
+                { q: "She loves ______ traditional dances.", options: ["dancing", "dance", "danced"], answer: "dancing", hint: "Grammar: Gerund after 'love'." },
+                { q: "They ______ celebrate the harvest every year.", options: ["never", "always", "later"], answer: "always", hint: "Grammar: Time adverbials." },
+                { q: "A funeral is a ______ practice in many tribes.", options: ["cultural", "scientific", "tech"], answer: "cultural", hint: "Vocabulary: Customs." },
+                { q: "Are there ______ elders in the room?", options: ["any", "some", "no"], answer: "any", hint: "Grammar: Quantifiers (questions)." },
+                { q: "The ______ is the head of a nation.", options: ["Chief", "President", "Principal"], answer: "President", hint: "Vocabulary: Leadership." },
+                { q: "You must ______ be honest to be a good citizen.", options: ["always", "already", "then"], answer: "always", hint: "Grammar: Time adverbials." },
+                { q: "I have ______ respect for our ancestors.", options: ["any", "no", "some"], answer: "some", hint: "Grammar: Quantifiers." },
+                { q: "Please ______ your hat before entering the palace.", options: ["removes", "remove", "removing"], answer: "remove", hint: "Grammar: Imperatives." },
+                { q: "He is a ______ Cameroonian man.", options: ["brave old", "old brave", "bravely old"], answer: "brave old", hint: "Grammar: Adjective order." },
+                { q: "Learning other ______ helps us live together.", options: ["cultures", "shops", "fights"], answer: "cultures", hint: "Vocabulary: Living together." }
+            ] 
+        },
+        { 
+            title: "Module 5: Modern Technology", 
+            questions: [
+                { q: "I spend time ______ the internet for news.", options: ["surf", "surfing", "surfed"], answer: "surfing", hint: "Grammar: Gerunds." },
+                { q: "A tablet is a modern electronic ______.", options: ["gadget", "furniture", "chore"], answer: "gadget", hint: "Vocabulary: Technology gadgets." },
+                { q: "I fixed the computer by ______.", options: ["himself", "itself", "myself"], answer: "myself", hint: "Grammar: Reflexive pronouns (I)." },
+                { q: "Please ______ a moment while I check the line.", options: ["hang up", "hold on", "go away"], answer: "hold on", hint: "Vocabulary: Phone politeness." },
+                { q: "This is the phone ______ my uncle sent me.", options: ["who", "which", "where"], answer: "which", hint: "Grammar: Relative pronouns (Objects)." },
+                { q: "I am ______ buy a new laptop next month.", options: ["will", "going to", "did"], answer: "going to", hint: "Grammar: Future using 'going to'." },
+                { q: "WhatsApp and Twitter are types of ______.", options: ["social media", "offline apps", "food"], answer: "social media", hint: "Vocabulary: Digital media." },
+                { q: "The girl taught ______ how to code.", options: ["herself", "himself", "myself"], answer: "herself", hint: "Grammar: Reflexive pronouns (She)." },
+                { q: "You should be ______ when talking to people online.", options: ["rude", "polite", "loud"], answer: "polite", hint: "Vocabulary: Internet manners." },
+                { q: "He likes ______ digital games in his free time.", options: ["play", "played", "playing"], answer: "playing", hint: "Grammar: Gerund after 'like'." },
+                { q: "A ______ is a screen for watching videos.", options: ["monitor", "keyboard", "mouse"], answer: "monitor", hint: "Vocabulary: Technology parts." },
+                { q: "The boy ______ phone is ringing is my brother.", options: ["who", "whose", "which"], answer: "whose", hint: "Grammar: Relative pronouns (Possession)." },
+                { q: "They solved the technical problem ______.", options: ["themselves", "himself", "itself"], answer: "themselves", hint: "Grammar: Reflexive pronouns (They)." },
+                { q: "______ you please speak more loudly?", options: ["Should", "Could", "May"], answer: "Could", hint: "Vocabulary: Phone politeness." },
+                { q: "She is ______ download the new app now.", options: ["going to", "will", "did"], answer: "going to", hint: "Grammar: Future plan." },
+                { q: "Posting bad things about others is not good ______.", options: ["citizenship", "tech", "food"], answer: "citizenship", hint: "Vocabulary: Digital citizenship." },
+                { q: "This is the app ______ helps me learn English.", options: ["which", "who", "where"], answer: "which", hint: "Grammar: Relative pronouns." },
+                { q: "The laptop ______ stopped working yesterday.", options: ["itself", "myself", "herself"], answer: "itself", hint: "Grammar: Reflexive pronouns (It)." },
+                { q: "Never share your ______ with strangers online.", options: ["password", "name", "picture"], answer: "password", hint: "Vocabulary: Digital safety." },
+                { q: "A ______ is used to type text on a computer.", options: ["keyboard", "screen", "printer"], answer: "keyboard", hint: "Vocabulary: Computer parts." }
+            ] 
+        },
+        { 
+            title: "Module 6: Reading & Revision", 
+            passage: "Sita is a student in Logbessou. Every morning, she sweeps the compound and fetches water before school. She studies hard to become a doctor. In the evening, she uses WhatsApp to chat politely with friends, but only after her homework. At the Ngondo festival, she proudly wears her Toghu dress to celebrate her local culture. She knows that being a good citizen means respecting laws and keeping the environment clean.",
+            questions: [
+                { q: "When does Sita sweep the compound?", options: ["In the evening", "Every morning", "At night"], answer: "Every morning", hint: "Check the morning routine." },
+                { q: "Sita wants to be a ______ in the future.", options: ["nurse", "pilot", "doctor"], answer: "doctor", hint: "Check the career dream." },
+                { q: "What app does she use for chatting?", options: ["WhatsApp", "Facebook", "Instagram"], answer: "WhatsApp", hint: "Check the social media name." },
+                { q: "Sita finishes her ______ before using the phone.", options: ["dinner", "homework", "games"], answer: "homework", hint: "Check her priority." },
+                { q: "Which dress does she wear for festivals?", options: ["Suit", "Toghu", "Gown"], answer: "Toghu", hint: "Traditional dress name." },
+                { q: "Logbessou is her place of ______.", options: ["work", "study", "play"], answer: "study", hint: "Check the student context." },
+                { q: "She chats ______ with her friends.", options: ["politely", "rudely", "loudly"], answer: "politely", hint: "Check internet manners." },
+                { q: "The Ngondo festival celebrates her ______.", options: ["school", "culture", "sport"], answer: "culture", hint: "Check cultural context." },
+                { q: "Sita believes in keeping the environment ______.", options: ["dirty", "clean", "noisy"], answer: "clean", hint: "Check environmental awareness." },
+                { q: "Respecting ______ is part of being a good citizen.", options: ["fights", "laws", "rubbish"], answer: "laws", hint: "Check citizenship." },
+                { q: "Sita ______ to become a doctor.", options: ["wants", "wanted", "wanting"], answer: "wants", hint: "Grammar: Present simple." },
+                { q: "She ______ her traditional dress proudly.", options: ["wear", "wears", "wearing"], answer: "wears", hint: "Grammar: Habit/Fact." },
+                { q: "Ngondo is a great ______ practice.", options: ["modern", "cultural", "bad"], answer: "cultural", hint: "Vocabulary: Customs." },
+                { q: "WhatsApp is a ______ tool.", options: ["multimedia", "cooking", "farming"], answer: "multimedia", hint: "Vocabulary: Technology." },
+                { q: "Douala is the city where ______ is located.", options: ["Yaoundé", "Logbessou", "Kribi"], answer: "Logbessou", hint: "Location context." },
+                { q: "She ______ her homework every evening.", options: ["do", "does", "done"], answer: "does", hint: "Grammar: 3rd person singular." },
+                { q: "The ______ is where she gets water.", options: ["well", "oven", "fridge"], answer: "well", hint: "Inference from chores." },
+                { q: "Sita is a very ______ learner.", options: ["lazy", "quiet", "hardworking"], answer: "hardworking", hint: "Character traits." },
+                { q: "She ______ up her compound every morning.", options: ["cleans", "clean", "cleaning"], answer: "cleans", hint: "Grammar: Routine habit." },
+                { q: "A good citizen ______ the environment.", options: ["protects", "destroys", "ignores"], answer: "protects", hint: "Vocabulary: Citizenship." }
+            ] 
+        }
+    ];
+
+    let unlockedLevel = 0;
+    let currentModuleIdx = null;
+    let currentQ = 0;
+    let score = 0;
+    let failedQuestions = [];
+    let currentShuffledQuestions = [];
+
+    // Load progress from local storage
+    if(localStorage.getItem('easterProg')) unlockedLevel = parseInt(localStorage.getItem('easterProg'));
+
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    function resetProgress() {
+        if(confirm("Are you sure you want to delete all passed scores and restart from Module 1?")) {
+            localStorage.removeItem('easterProg');
+            unlockedLevel = 0;
+            showMenu();
+        }
+    }
+
+    function showMenu() {
+        document.getElementById('menu').style.display = 'block';
+        document.getElementById('quiz-area').style.display = 'none';
+        document.getElementById('result-area').style.display = 'none';
+        const list = document.getElementById('module-list');
+        list.innerHTML = '';
+        allModules.forEach((mod, idx) => {
+            const btn = document.createElement('button');
+            btn.className = `module-btn ${idx < unlockedLevel ? 'passed' : ''}`;
+            btn.disabled = idx > unlockedLevel;
+            const badge = idx < unlockedLevel ? '<span class="badge-passed">PASSED ✓</span>' : 
+                         (idx === unlockedLevel ? '<span style="color:#1e3a8a">▶ START</span>' : '<span style="color:#94a3b8">LOCKED 🔒</span>');
+            btn.innerHTML = `<span><strong>${idx + 1}.</strong> ${mod.title}</span> ${badge}`;
+            btn.onclick = () => startQuiz(idx);
+            list.appendChild(btn);
+        });
+    }
+
+    function startQuiz(idx) {
+        currentModuleIdx = idx;
+        const mod = allModules[idx];
+        currentQ = 0;
+        score = 0;
+        failedQuestions = [];
+        
+        // Shuffle options for each question to ensure randomization
+        currentShuffledQuestions = mod.questions.map(q => {
+            let newQ = {...q};
+            newQ.options = shuffleArray([...q.options]);
+            return newQ;
+        });
+
+        document.getElementById('menu').style.display = 'none';
+        document.getElementById('quiz-area').style.display = 'block';
+        document.getElementById('module-title').innerText = mod.title;
+        
+        if (mod.passage) {
+            document.getElementById('passage-container').style.display = 'block';
+            document.getElementById('passage-text').innerText = mod.passage;
+        } else {
+            document.getElementById('passage-container').style.display = 'none';
+        }
+        loadQuestion();
+    }
+
+    function loadQuestion() {
+        const qData = currentShuffledQuestions[currentQ];
+        const container = document.getElementById('question-container');
+        document.getElementById('hint-display').innerText = qData.hint;
+        document.getElementById('hint-display').style.display = 'none';
+        
+        container.innerHTML = `
+            <p style="color:#64748b; font-weight:600;">Question ${currentQ + 1} of 20</p>
+            <p style="font-size: 19px; margin: 15px 0;"><strong>${qData.q}</strong></p>
+            <div class="options">
+                ${qData.options.map(opt => `<button onclick="checkAnswer('${opt.replace(/'/g, "\\'")}')">${opt}</button>`).join('')}
+            </div>
+        `;
+    }
+
+    function toggleHintDisplay() {
+        const h = document.getElementById('hint-display');
+        h.style.display = h.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function checkAnswer(userChoice) {
+        const qData = currentShuffledQuestions[currentQ];
+        if(userChoice === qData.answer) {
+            score++;
+        } else {
+            failedQuestions.push(qData);
+        }
+        currentQ++;
+        if(currentQ < 20) loadQuestion();
+        else showResults();
+    }
+
+    function showResults() {
+        document.getElementById('quiz-area').style.display = 'none';
+        document.getElementById('result-area').style.display = 'block';
+        const marks = score; 
+        const passed = score === 20; // Perfect score required for mastery
+        
+        document.getElementById('result-status').innerText = passed ? "Success! 🎉" : "Mastery Not Reached";
+        document.getElementById('grade-container').innerText = marks >= 18 ? "A+" : (marks >= 14 ? "A" : (marks >= 10 ? "C" : "E"));
+        document.getElementById('grade-container').style.color = passed ? "#10b981" : "#ef4444";
+        document.getElementById('score-text').innerHTML = `Marks: <strong>${marks}/20</strong><br><small>${passed ? 'Module Complete!' : 'You must get 20/20 to unlock the next level.'}</small>`;
+        
+        const reviewArea = document.getElementById('review-area');
+        const nextBtn = document.getElementById('next-action-btn');
+        
+        if(passed) {
+            reviewArea.style.display = 'none';
+            nextBtn.innerText = "NEXT MODULE";
+            nextBtn.style.background = "#10b981";
+            nextBtn.onclick = () => {
+                if(currentModuleIdx === unlockedLevel) {
+                    unlockedLevel++;
+                    localStorage.setItem('easterProg', unlockedLevel);
+                }
+                showMenu();
+            };
+        } else {
+            reviewArea.style.display = 'block';
+            const fList = document.getElementById('failed-questions');
+            fList.innerHTML = '';
+            failedQuestions.slice(0, 5).forEach(item => { 
+                fList.innerHTML += `<div class="review-item"><strong>Hint:</strong> ${item.hint}</div>`; 
+            });
+            if(failedQuestions.length > 5) fList.innerHTML += `<div class="review-item"><em>...and ${failedQuestions.length - 5} more. Review your notes carefully!</em></div>`;
+            
+            nextBtn.innerText = "RETAKE MODULE";
+            nextBtn.style.background = "#ef4444";
+            nextBtn.onclick = () => startQuiz(currentModuleIdx);
+        }
+    }
+    showMenu();
+</script>
+</body>
+</html>
